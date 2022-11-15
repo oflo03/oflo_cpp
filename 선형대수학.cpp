@@ -154,6 +154,6 @@ int main()
 			std::cout << "Error" << std::endl;
 			break;
 		}
-
 	}
+	return 0;
 }
