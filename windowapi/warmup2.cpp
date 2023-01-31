@@ -150,7 +150,7 @@ int main()
 				qsort(matrix[0], 20, 4,
 					[](const void* a, const void* b)
 					{
-						return uid(dre) - 26;
+						return uid(dre) - 25;
 					});
 				break;
 			case 's':

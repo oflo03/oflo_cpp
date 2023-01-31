@@ -128,3 +128,4 @@ dmypy.json
 # Pyre type checker
 .pyre/
 gitignore
+windowapi/.vs/windowapi/v17/ipch/AutoPCH/634ee8f00592cffe/WARMUP3.ipch
