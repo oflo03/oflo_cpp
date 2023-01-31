@@ -1,6 +1,7 @@
 #include <iostream>
 #include <format>
 #include <random>
+#include <algorithm>
 
 std::random_device rd;
 std::default_random_engine dre{ rd() };
@@ -13,36 +14,151 @@ void print_matrix()
 	for (int i = 0; i < 4; ++i)
 	{
 		for (int j = 0; j < 5; ++j)
-		{
-			std::cout << std::format("{:4f}", matrix[i][j]);
-		}
-
+			std::cout << std::format("{:4d}", matrix[i][j]);
+		std::cout << std::endl;
 	}
+}
+
+void input_matrix()
+{
+	for (int i = 0; i < 20; ++i)
+		(*matrix)[i] = uid(dre);
+}
+
+void trade(int* a, int* b)
+{
+	int temp = *a;
+	*a = *b;
+	*b = temp;
 }
 
 int main()
 {
-	char sentence[] = "asda";
+	input_matrix();
 	bool running = true;
-	int word_num;
-	bool to_upper = false;
-	int word_start;
 	while (running)
 	{
 		system("cls");
-		std::cout << "현재 문장: " << sentence << std::endl << std::endl;
+		std::cout << "현재 행렬: " << std::endl;
+		print_matrix();
+		std::cout << std::endl;
 		std::cout << "사용할 명령어를 입력하세요" << std::endl;
-		std::cout << "	-e/E: 단어에 e 또는 E자가 있는 경우에는 그 단어를 모두 대문자로 변환" << std::endl;
-		std::cout << "	-f/F: 모든 공백에 랜덤한 문자 (@, %, # 또는 .)를 삽입" << std::endl;
-		std::cout << "	-l/L: 단어의 개수를 출력" << std::endl;
-		std::cout << "	-c/C: 대문자는 소문자로, 소문자는 대문자로 변환" << std::endl;
-		std::cout << "	-a/A: 문장의 문자를 좌측/우측으로 한 문자씩 이동" << std::endl;
-		std::cout << "	-q/Q: 프로그램을 종료" << std::endl;
+		std::cout << "	-a: 1행1열을 시작으로 행을 따라 오름차순으로 정렬" << std::endl;
+		std::cout << "	-d: 1행5열을 시작으로 열을 따라 내림차순으로 정렬" << std::endl;
+		std::cout << "	-e: 짝수만 출력하기" << std::endl;
+		std::cout << "	-o: 홀수만 출력하기" << std::endl;
+		std::cout << "	-m: 최대값 출력" << std::endl;
+		std::cout << "	-n: 최소값 출력" << std::endl;
+		std::cout << "	-p: 한 행의 값을 모두 더해 각 행의 1열에 저장" << std::endl;
+		std::cout << "	-r: 랜덤하게 재정렬" << std::endl;
+		std::cout << "	-s: 다시 입력받기 시작" << std::endl;
+		std::cout << "	-q: 프로그램 종료" << std::endl;
 		char input;
+		int max = 0;
+		size_t maxindex = 0;
+		int min = 51;
+		size_t minindex = 0;
 		if (std::cin >> input && '\n' != input)
 		{
 			switch (input)
 			{
+			case 'a':
+				qsort(matrix[0], 20, 4,
+					[](const void* a, const void* b)
+					{
+						return *(int*)a - *(int*)b;
+					});
+				break;
+			case 'd':
+				for (int i = 0; i < 19; ++i)
+					for (int j = i + 1; j < 20; ++j)
+						if (matrix[i % 4][4 - i / 4] < matrix[j % 4][4 - j / 4])
+							trade(matrix[i % 4] + 4 - i / 4, matrix[j % 4] + 4 - j / 4);
+				break;
+			case 'e':
+				for (int i = 0; i < 4; ++i)
+				{
+					for (int j = 0; j < 5; ++j)
+						if (0 == matrix[i][j] % 2)
+							std::cout << std::format("{:4d}", matrix[i][j]);
+						else
+							std::cout << std::format("{:4d}", 0);
+					std::cout << std::endl;
+				}
+				system("pause");
+				break;
+			case 'o':
+				for (int i = 0; i < 4; ++i)
+				{
+					for (int j = 0; j < 5; ++j)
+						if (1 == matrix[i][j] % 2)
+							std::cout << std::format("{:4d}", matrix[i][j]);
+						else
+							std::cout << std::format("{:4d}", 0);
+					std::cout << std::endl;
+				}
+				system("pause");
+				break;
+			case 'm':
+				for (int i = 0; i < 20; ++i)
+					if ((*matrix)[i] > max)
+					{
+						max = (*matrix)[i];
+						maxindex = i;
+					}
+				for (int i = 0; i < 4; ++i)
+				{
+					for (int j = 0; j < 5; ++j)
+						if (maxindex == i * 5 + j)
+							std::cout << std::format("{:4d}", matrix[i][j]);
+						else
+							std::cout << std::format("{:4d}", 0);
+					std::cout << std::endl;
+				}
+				system("pause");
+				break;
+			case 'n':
+				for (int i = 0; i < 20; ++i)
+					if ((*matrix)[i] < min)
+					{
+						min = (*matrix)[i];
+						minindex = i;
+					}
+				for (int i = 0; i < 4; ++i)
+				{
+					for (int j = 0; j < 5; ++j)
+						if (minindex == i * 5 + j)
+							std::cout << std::format("{:4d}", matrix[i][j]);
+						else
+							std::cout << std::format("{:4d}", 0);
+					std::cout << std::endl;
+				}
+				system("pause");
+				break;
+			case 'p':
+				for (int i = 0; i < 4; ++i)
+				{
+					int sum = 0;
+					for (int j = 0; j < 5; ++j)
+					{
+						sum += matrix[i][j];
+					}
+					matrix[i][0] += sum;
+				}
+				break;
+			case 'r':
+				qsort(matrix[0], 20, 4,
+					[](const void* a, const void* b)
+					{
+						return uid(dre) - 26;
+					});
+				break;
+			case 's':
+				input_matrix();
+				break;
+			case 'q':
+				running = false;
+				break;
 			default:
 				std::cout << "입력된 명령어가 올바르지 않습니다" << std::endl;
 				system("pause");
